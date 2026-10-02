@@ -1,6 +1,28 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import Icon from './Icon.jsx'
 import { CATALOGUE, CHINCHIN_SIZES, CHINCHIN_CATEGORIES, money } from '../data/menu.js'
+
+/** Open/close section with a chevron. Shows a small count when something inside is in the cart. */
+export function Accordion({ title, meta, count = 0, defaultOpen = true, level = 'h4', className = '', children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  const Tag = level
+  const id = useId()
+  return (
+    <div className={`acc ${className}${open ? ' open' : ''}`}>
+      <Tag className="acc-title">
+        <button type="button" className="acc-head" aria-expanded={open} aria-controls={id} onClick={() => setOpen(o => !o)}>
+          <span className="acc-name">{title}{meta && <small>{meta}</small>}</span>
+          {count > 0 && <em className="acc-count">{count} added</em>}
+          <span className="acc-chev" aria-hidden="true"><Icon name="chevD" size={18} stroke={2.4} /></span>
+        </button>
+      </Tag>
+      <div className="acc-body" id={id}><div className="acc-inner">{children}</div></div>
+    </div>
+  )
+}
+
+const isWide = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 621px)').matches
+export { isWide }
 
 /** Quantity stepper used for every line. */
 export function Stepper({ qty, onDec, onInc, label }) {
@@ -81,30 +103,33 @@ export function ChinChinPanel({ cart, photos }) {
         {size.note ? `${size.note}. ` : ''}Baileys carries a small extra charge, we will confirm it with you.
       </p>
 
-      {CHINCHIN_CATEGORIES.map(cat => (
-        <div key={cat.key} className="flavour-block">
-          <h4>{cat.name}<span>{cat.items.length} flavours</span></h4>
-          <div className="chips">
-            {cat.items.map(f => {
-              const l = line(f)
-              return (
-                <div key={f} className={`chip${l ? ' sel' : ''}`}>
-                  <button type="button" onClick={() => !l && add(f)} aria-pressed={!!l}>
-                    {l && <Icon name="check" size={14} stroke={2.6} />}{f}
-                  </button>
-                  {l && (
-                    <span className="chip-qty">
-                      <button type="button" onClick={() => cart.dec(l.id)} aria-label={`Fewer ${f}`}><Icon name="minus" size={12} stroke={3} /></button>
-                      <output>{l.qty}</output>
-                      <button type="button" onClick={() => add(f)} aria-label={`More ${f}`}><Icon name="plus" size={12} stroke={3} /></button>
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      ))}
+      {CHINCHIN_CATEGORIES.map((cat, i) => {
+        const picked = cat.items.filter(f => line(f)).length
+        return (
+          <Accordion key={cat.key} className="flavour-block" title={cat.name} meta={`${cat.items.length} flavours`}
+                     count={picked} defaultOpen={i === 0 || isWide()}>
+            <div className="chips">
+              {cat.items.map(f => {
+                const l = line(f)
+                return (
+                  <div key={f} className={`chip${l ? ' sel' : ''}`}>
+                    <button type="button" onClick={() => !l && add(f)} aria-pressed={!!l}>
+                      {l && <Icon name="check" size={14} stroke={2.6} />}{f}
+                    </button>
+                    {l && (
+                      <span className="chip-qty">
+                        <button type="button" onClick={() => cart.dec(l.id)} aria-label={`Fewer ${f}`}><Icon name="minus" size={12} stroke={3} /></button>
+                        <output>{l.qty}</output>
+                        <button type="button" onClick={() => add(f)} aria-label={`More ${f}`}><Icon name="plus" size={12} stroke={3} /></button>
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </Accordion>
+        )
+      })}
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Reveal from './Reveal.jsx'
 import Icon from './Icon.jsx'
-import { ItemRows, ChinChinPanel } from './OrderParts.jsx'
+import { ItemRows, ChinChinPanel, Accordion, isWide } from './OrderParts.jsx'
 import { CATALOGUE, WHATSAPP, money } from '../data/menu.js'
 import { goShop } from '../lib/route.js'
 
@@ -49,14 +49,20 @@ const Heart = () => (
   </svg>
 )
 
-function Card({ img, title, sub, children }) {
+function Card({ img, title, sub, children, collapsible = false, defaultOpen = true, count = 0 }) {
   return (
     <article className="shop-card picker">
       <div className="shop-photo"><img src={img} alt="" loading="lazy" decoding="async" /></div>
       <div className="shop-card-body">
-        <h3>{title}</h3>
-        {sub && <p>{sub}</p>}
-        {children}
+        {collapsible ? (
+          <Accordion level="h3" title={title} count={count} defaultOpen={defaultOpen}>{children}</Accordion>
+        ) : (
+          <>
+            <h3>{title}</h3>
+            {sub && <p>{sub}</p>}
+            {children}
+          </>
+        )}
       </div>
     </article>
   )
@@ -141,8 +147,10 @@ export default function Shop({ cat, cart, onCart }) {
           <Reveal as="section" key={c.key} className="shop-sec">
             <div className="shop-sec-head"><h2>{c.title}</h2><p>{c.blurb}</p></div>
             <div className="shop-grid">
-              {c.groups.map(g => (
-                <Card key={g.title} img={PHOTO[g.photo]} title={g.title}>
+              {c.groups.map((g, i) => (
+                <Card key={g.title} img={PHOTO[g.photo]} title={g.title} collapsible
+                      defaultOpen={i === 0 || isWide()}
+                      count={g.items.filter(it => cart.lines[it.id]).length}>
                   <ItemRows group={g} catTitle={c.title} cart={cart} />
                 </Card>
               ))}

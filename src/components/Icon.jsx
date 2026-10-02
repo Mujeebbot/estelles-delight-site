@@ -8,6 +8,7 @@ const P = {
   x:        <><path d="M6 6l12 12" /><path d="M18 6 6 18" /></>,
   chevL:    <path d="m15 18-6-6 6-6" />,
   chevR:    <path d="m9 18 6-6-6-6" />,
+  chevD:    <path d="m6 9 6 6 6-6" />,
   home:     <><path d="M4 11 12 4l8 7" /><path d="M6 10v9.5h4.5V14h3v5.5H18V10" /></>,
   bag:      <><path d="M6 8h12l1 12H5L6 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></>,
   mail:     <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 7 8.5 6 8.5-6" /></>,
