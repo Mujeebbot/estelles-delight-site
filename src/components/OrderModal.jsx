@@ -24,8 +24,9 @@ const tomorrow = () => {
   return d.toISOString().slice(0, 10)
 }
 
-export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
-  const [step, setStep] = useState(1)
+export default function OrderModal({ open, onClose, cart, step = 1, onStep }) {
+  // The step lives in the address bar (/order/items ...); this just asks to change it.
+  const setStep = (v) => onStep(Math.max(1, Math.min(4, typeof v === 'function' ? v(step) : v)))
   const D = useMemo(loadDraft, [])          // details typed earlier, kept across refreshes
   const today = new Date().toISOString().slice(0, 10)
   const [occasion, setOccasion] = useState(D.occasion || '')
@@ -60,7 +61,7 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
   const resetAll = () => {
     cart.clear(); setOccasion(''); setDate(''); setTime(''); setFulfil('delivery'); setAddress('')
     setGuests(''); setName(''); setPhone(''); setEmail(''); setNotes(''); setTouched(false)
-    setStep(1); setDone(false); setConfirmLeave(false)
+    setDone(false); setConfirmLeave(false)
   }
   // X / Esc: leave quietly if nothing was entered, otherwise ask what to do with the order.
   const requestClose = () => { if (done) { if (doneKind === 'form') resetAll(); else setDone(false); onClose() } else if (dirty) setConfirmLeave(true); else onClose() }
@@ -68,8 +69,7 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
   const closeRef = useRef(requestClose)
   closeRef.current = requestClose
 
-  // Open at the right step (e.g. straight to Schedule from the pack builder)
-  useEffect(() => { if (open) { setStep(startStep); setTouched(false) } }, [open, startStep])
+  useEffect(() => { if (open) setTouched(false) }, [open])
 
   useEffect(() => {
     if (!open) return

@@ -1335,3 +1335,12 @@ body.order-open .shop-bar { display: none; }
 .chip > button[disabled] { opacity: .45; cursor: not-allowed; text-decoration: line-through; }
 .ow-done-actions { flex-wrap: wrap; justify-content: center; }
 
+
+/* ═════════ ROUND 10: accordion headers inside .flavour-block (beat the old h4 span rules) ═════════ */
+.flavour-block .acc-title { display: block; margin: 0; }
+.flavour-block .acc-head .acc-name { font: 800 17px 'Blinker', sans-serif; color: var(--p-fg, var(--brand-dark)); }
+.flavour-block .acc-head .acc-name small { font: 400 12px 'Fredoka', sans-serif; color: var(--p-mute, rgba(59,26,8,.6)); }
+.flavour-block .acc-head .acc-chev { font: inherit; }
+.flavour-block .acc-head .acc-count { font: 600 11.5px 'Fredoka', sans-serif; color: #fff; }
+.shop-card-body .acc-title { display: block; margin: 0; }
+

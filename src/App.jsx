@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import Nav           from './components/Nav.jsx'
 import Hero          from './components/Hero.jsx'
 import SignatureMenu from './components/SignatureMenu.jsx'
@@ -18,29 +18,30 @@ import OrderModal    from './components/OrderModal.jsx'
 import CartDrawer    from './components/CartDrawer.jsx'
 import Shop          from './components/Shop.jsx'
 import { useCart }   from './lib/cart.js'
-import { useRoute, goShop } from './lib/route.js'
+import { useRoute, goShop, openOrder, closeOrder, setOrderStep, ORDER_STEPS } from './lib/route.js'
 
 export default function App() {
   const route = useRoute()
   const cart = useCart()
   const [lightboxSrc, setLightboxSrc] = useState(null)
-  const [orderOpen, setOrderOpen]     = useState(false)
   const [cartOpen, setCartOpen]       = useState(false)
-  const [startStep, setStartStep]     = useState(3)
 
-  const closeOrder = useCallback(() => setOrderOpen(false), [])
+  // The order wizard lives in the address bar: /order/items etc.
+  const orderOpen = !!route.order
+  const lastStep = useRef(1)                       // keeps the step steady while the wizard animates out
+  if (route.order) lastStep.current = ORDER_STEPS.indexOf(route.order) + 1
   const closeCart  = useCallback(() => setCartOpen(false), [])
 
   // Every "Order now" goes to the shop; the order form only opens from checkout.
   const toShop = useCallback(() => { setCartOpen(false); goShop() }, [])
-  const checkout = useCallback(() => { setCartOpen(false); setStartStep(cart.list.length ? 3 : 1); setOrderOpen(true) }, [cart.list.length])
+  const checkout = useCallback(() => { setCartOpen(false); openOrder(cart.list.length ? 3 : 1) }, [cart.list.length])
   // The pack builder is step 2 of the order form; open at the occasion step when the pack is empty.
-  const build = useCallback(() => { setCartOpen(false); setStartStep(cart.list.length ? 2 : 1); setOrderOpen(true) }, [cart.list.length])
+  const build = useCallback(() => { setCartOpen(false); openOrder(cart.list.length ? 2 : 1) }, [cart.list.length])
 
   return (
     <>
       <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
-      <OrderModal open={orderOpen} onClose={closeOrder} cart={cart} startStep={startStep} />
+      <OrderModal open={orderOpen} onClose={closeOrder} cart={cart} step={lastStep.current} onStep={setOrderStep} />
       <CartDrawer open={cartOpen} onClose={closeCart} cart={cart} onCheckout={checkout} onBrowse={toShop} onBuild={build} />
 
       <Nav page={route.page} cartCount={cart.list.length} onCartClick={() => setCartOpen(true)} onOrderClick={toShop} />
