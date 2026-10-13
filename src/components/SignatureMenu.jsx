@@ -10,13 +10,13 @@ import drinksImg     from '../assets/images/drinks-refresh-cans.webp'
 import eventsImg     from '../assets/images/IMG-20260927-WA0279.jpg'
 
 const items = [
-  { key: 'chinchin',   img: chinchinImg,   name: 'Chin Chin',         sub: '30+ bold flavours',      price: 'From $10',  href: '#/shop/chinchin' },
-  { key: 'pies',       img: piesImg,       name: 'Meat Pies',         sub: 'Flaky, juicy, fresh',    price: 'From $4', href: '#/shop/pies' },
-  { key: 'smallchops', img: smallChopsImg, name: 'Party Platters',     sub: 'Small chops for a crowd', price: 'From $200', href: '#/shop/platters' },
-  { key: 'grills',     img: grillsImg,     name: 'Grills',            sub: 'Bold, smoky, spiced',    price: 'From $5', href: '#/shop/smallchops' },
-  { key: 'puffpuff',   img: puffpuffImg,   name: 'Puff Puff',         sub: 'Pillowy and golden',     price: 'From $1', href: '#/shop/puffpuff' },
-  { key: 'drinks',     img: drinksImg,     name: 'Mocktails & Zobo',  sub: 'Fresh, alcohol-free',    price: '$10 / can', href: '#/shop/drinks' },
-  { key: 'events',     img: eventsImg,     name: 'Event Packs',       sub: 'Your event, handled',    price: 'From $15', href: '#/shop/platters' },
+  { key: 'chinchin',   img: chinchinImg,   name: 'Chin Chin',         sub: '30+ bold flavours',      price: 'From $10',  href: '/shop/chinchin' },
+  { key: 'pies',       img: piesImg,       name: 'Meat Pies',         sub: 'Flaky, juicy, fresh',    price: 'From $4', href: '/shop/pies' },
+  { key: 'smallchops', img: smallChopsImg, name: 'Party Platters',     sub: 'Small chops for a crowd', price: 'From $200', href: '/shop/platters' },
+  { key: 'grills',     img: grillsImg,     name: 'Grills',            sub: 'Bold, smoky, spiced',    price: 'From $5', href: '/shop/smallchops' },
+  { key: 'puffpuff',   img: puffpuffImg,   name: 'Puff Puff',         sub: 'Pillowy and golden',     price: 'From $1', href: '/shop/puffpuff' },
+  { key: 'drinks',     img: drinksImg,     name: 'Mocktails & Zobo',  sub: 'Fresh, alcohol-free',    price: '$10 / can', href: '/shop/drinks' },
+  { key: 'events',     img: eventsImg,     name: 'Event Packs',       sub: 'Your event, handled',    price: 'From $15', href: '/shop/platters' },
 ]
 
 
@@ -187,7 +187,7 @@ export default function SignatureMenu() {
               <p className="kicker">The menu</p>
               <h2 className="menu-title">Shop Our Delights</h2>
             </div>
-            <a href="#/shop" className="menu-view-all">Open the shop <span aria-hidden="true">&rarr;</span></a>
+            <a href="/shop" className="menu-view-all">Open the shop <span aria-hidden="true">&rarr;</span></a>
           </div>
         </Reveal>
       </div>

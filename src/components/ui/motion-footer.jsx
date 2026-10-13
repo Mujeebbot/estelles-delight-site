@@ -534,10 +534,10 @@ export function CinematicFooter() {
 
               {/* Secondary nav pills */}
               <div style={s.secondaryPills}>
-                <MagneticButton as="a" href="#menu" className="footer-glass-pill" style={s.pillSm}>Menu</MagneticButton>
-                <MagneticButton as="a" href="#story" className="footer-glass-pill" style={s.pillSm}>Our Story</MagneticButton>
-                <MagneticButton as="a" href="#catering" className="footer-glass-pill" style={s.pillSm}>Catering</MagneticButton>
-                <MagneticButton as="a" href="#training" className="footer-glass-pill" style={s.pillSm}>Training</MagneticButton>
+                <MagneticButton as="a" href="/#menu" className="footer-glass-pill" style={s.pillSm}>Menu</MagneticButton>
+                <MagneticButton as="a" href="/#story" className="footer-glass-pill" style={s.pillSm}>Our Story</MagneticButton>
+                <MagneticButton as="a" href="/#catering" className="footer-glass-pill" style={s.pillSm}>Catering</MagneticButton>
+                <MagneticButton as="a" href="/#training" className="footer-glass-pill" style={s.pillSm}>Training</MagneticButton>
                 <MagneticButton
                   as="a"
                   href="https://www.instagram.com/estelles_delight/"

@@ -25,15 +25,24 @@ function seo(siteUrl) {
       if (url) {
         business.url = url + '/'
         business.image = url + '/og-image.jpg'
+        // canonical + og:url are set per page in src/lib/route.js (they differ for /shop)
         tags.push(
-          { tag: 'link', attrs: { rel: 'canonical', href: url + '/' }, injectTo: 'head' },
-          { tag: 'meta', attrs: { property: 'og:url', content: url + '/' }, injectTo: 'head' },
           { tag: 'meta', attrs: { property: 'og:image', content: url + '/og-image.jpg' }, injectTo: 'head' },
           { tag: 'meta', attrs: { name: 'twitter:image', content: url + '/og-image.jpg' }, injectTo: 'head' },
         )
       }
       tags.push({ tag: 'script', attrs: { type: 'application/ld+json' }, children: JSON.stringify(business), injectTo: 'head' })
       return tags
+    },
+    // robots.txt + sitemap.xml (the sitemap needs the live address)
+    generateBundle() {
+      const url = siteUrl.replace(/\/+$/, '')
+      this.emitFile({ type: 'asset', fileName: 'robots.txt',
+        source: `User-agent: *\nAllow: /\n${url ? `\nSitemap: ${url}/sitemap.xml\n` : ''}` })
+      if (!url) return
+      const paths = ['/', '/shop', ...['chinchin', 'pies', 'smallchops', 'platters', 'puffpuff', 'drinks'].map(c => `/shop/${c}`)]
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map(p => `  <url><loc>${url}${p}</loc></url>`).join('\n')}\n</urlset>\n` })
     },
   }
 }

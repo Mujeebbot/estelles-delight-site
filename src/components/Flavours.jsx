@@ -89,7 +89,7 @@ export default function Flavours() {
             ))}
           </ul>
           <p>Mix any flavours. 100g packs have a minimum of 5 per flavour. Baileys carries a small extra charge.</p>
-          <a href="#/shop/chinchin" className="btn btn-solid">Shop Chin-Chin</a>
+          <a href="/shop/chinchin" className="btn btn-solid">Shop Chin-Chin</a>
         </Reveal>
       </div>
     </section>

@@ -21,20 +21,20 @@ export default function Footer() {
 
           <nav className="footer-col footer-explore" aria-label="Explore">
             <h5>Explore</h5>
-            <a href="#menu">Menu</a>
-            <a href="#/shop">Shop</a>
-            <a href="#flavours">Chin-Chin</a>
-            <a href="#story">Our story</a>
-            <a href="#catering">Catering</a>
-            <a href="#training">Training</a>
+            <a href="/#menu">Menu</a>
+            <a href="/shop">Shop</a>
+            <a href="/#flavours">Chin-Chin</a>
+            <a href="/#story">Our story</a>
+            <a href="/#catering">Catering</a>
+            <a href="/#training">Training</a>
           </nav>
 
           <div className="footer-col footer-order">
             <h5>Order</h5>
             <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">WhatsApp</a>
             <a href={`mailto:${EMAIL}`}>Email</a>
-            <a href="#catering">Catering enquiry</a>
-            <a href="#/shop" className="footer-order-btn">Place an order <Icon name="arrow" size={15} /></a>
+            <a href="/#catering">Catering enquiry</a>
+            <a href="/shop" className="footer-order-btn">Place an order <Icon name="arrow" size={15} /></a>
           </div>
 
           <div className="footer-col footer-contact">

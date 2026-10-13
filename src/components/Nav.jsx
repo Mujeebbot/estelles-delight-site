@@ -59,13 +59,13 @@ export default function Nav({ page, cartCount, onCartClick, onOrderClick }) {
   return (
     <nav id="nav" className={`${scrolled ? 'nav-scrolled' : ''}${shop ? ' nav-shop' : ''}`.trim()}>
       <div className="nav-inner">
-        <a href="#top" className="brand" onClick={() => setMenuOpen(false)}>
+        <a href="/" className="brand" onClick={() => setMenuOpen(false)}>
           <img src={logo} alt="Estelle's Delight" />
         </a>
 
         {shop ? (
           <div className="nav-pill nav-pill-home">
-            <a href="#/" className="navlink navlink-home" aria-label="Back to home page">
+            <a href="/" className="navlink navlink-home" aria-label="Back to home page">
               <Icon name="home" size={16} /> Home
             </a>
           </div>
