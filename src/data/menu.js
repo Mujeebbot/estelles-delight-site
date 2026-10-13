@@ -12,6 +12,9 @@ export const CHINCHIN_SIZES = [
   { key: '5.1L',  label: '5.1L bucket', price: 185, min: 1 },
 ]
 
+// Availability switches. Add a flavour name here to grey it out, or put `soldOut: true` on any item below.
+export const SOLD_OUT_FLAVOURS = []
+
 export const CHINCHIN_CATEGORIES = [
   { key: 'nuts',   name: 'Nuts & Seeds',   items: ['Trail Mix', 'Peanut', 'Pecans', 'Sesame', 'Almond', 'Hazelnut', 'Pistachios', 'Macadamia'] },
   { key: 'fruity', name: 'Fruity',         items: ['Prunes', 'Apricot', 'Orange', 'Coconut', 'Sultanas', 'Cranberry', 'Strawberry', 'Lemon Zest', 'Fruit Mix'] },

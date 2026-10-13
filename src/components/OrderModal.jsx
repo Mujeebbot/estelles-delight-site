@@ -4,6 +4,18 @@ import Icon from './Icon.jsx'
 import { ItemPicker, CartSummary } from './OrderParts.jsx'
 import { OCCASIONS, WHATSAPP, EMAIL, money } from '../data/menu.js'
 
+// Optional: set VITE_ORDER_ENDPOINT (e.g. a Formspree form URL) so orders also reach the shop
+// directly, even if the customer never presses Send in WhatsApp or their email app.
+const ORDER_ENDPOINT = import.meta.env.VITE_ORDER_ENDPOINT
+
+const DRAFT_KEY = 'ed-order-draft-v1'
+const loadDraft = () => {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null')
+    return d && typeof d === 'object' && Date.now() - (d.t || 0) < 7 * 864e5 ? d : {}
+  } catch { return {} }
+}
+
 const STEPS = ['Occasion', 'Items', 'Schedule', 'Confirm']
 const TIMES = ['Morning', 'Midday', 'Afternoon', 'Evening']
 
@@ -14,20 +26,35 @@ const tomorrow = () => {
 
 export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
   const [step, setStep] = useState(1)
-  const [occasion, setOccasion] = useState('')
-  const [date, setDate] = useState('')
-  const [time, setTime] = useState('')
-  const [fulfil, setFulfil] = useState('delivery')
-  const [address, setAddress] = useState('')
-  const [guests, setGuests] = useState('')
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [notes, setNotes] = useState('')
+  const D = useMemo(loadDraft, [])          // details typed earlier, kept across refreshes
+  const today = new Date().toISOString().slice(0, 10)
+  const [occasion, setOccasion] = useState(D.occasion || '')
+  const [date, setDate] = useState(D.date && D.date >= today ? D.date : '')
+  const [time, setTime] = useState(D.time || '')
+  const [fulfil, setFulfil] = useState(D.fulfil || 'delivery')
+  const [address, setAddress] = useState(D.address || '')
+  const [guests, setGuests] = useState(D.guests || '')
+  const [name, setName] = useState(D.name || '')
+  const [phone, setPhone] = useState(D.phone || '')
+  const [email, setEmail] = useState(D.email || '')
+  const [notes, setNotes] = useState(D.notes || '')
   const [touched, setTouched] = useState(false)
   const bodyRef = useRef(null)
   const [confirmLeave, setConfirmLeave] = useState(false)
   const [done, setDone] = useState(false)
+  const [doneKind, setDoneKind] = useState('link')   // 'link' = opened WhatsApp/email, 'form' = delivered to us
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    try {
+      const d = { occasion, date, time, fulfil, address, guests, name, phone, email, notes }
+      if (Object.entries(d).some(([k, v]) => v && !(k === 'fulfil' && v === 'delivery'))) {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ t: Date.now(), ...d }))
+      } else localStorage.removeItem(DRAFT_KEY)
+    } catch { /* storage unavailable */ }
+  }, [occasion, date, time, fulfil, address, guests, name, phone, email, notes])
 
   const dirty = cart.list.length > 0 || !!(occasion || date || time || guests || address || name || phone || email || notes)
   const resetAll = () => {
@@ -36,7 +63,7 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
     setStep(1); setDone(false); setConfirmLeave(false)
   }
   // X / Esc: leave quietly if nothing was entered, otherwise ask what to do with the order.
-  const requestClose = () => { if (done) { resetAll(); onClose() } else if (dirty) setConfirmLeave(true); else onClose() }
+  const requestClose = () => { if (done) { if (doneKind === 'form') resetAll(); else setDone(false); onClose() } else if (dirty) setConfirmLeave(true); else onClose() }
   const cancelOrder = () => { resetAll(); onClose() }
   const closeRef = useRef(requestClose)
   closeRef.current = requestClose
@@ -77,7 +104,33 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
     return L.join('\n')
   }, [cart.list, cart.total, occasionLabel, date, time, fulfil, address, guests, name, phone, email, notes])
 
-  const guard = (e) => { if (!canSend) { e.preventDefault(); setTouched(true); return } setTimeout(() => setDone(true), 500) }
+  const guard = (e) => { if (!canSend) { e.preventDefault(); setTouched(true); return } setTimeout(() => { setDoneKind('link'); setDone(true) }, 500) }
+
+  const copyOrder = async () => {
+    try { await navigator.clipboard.writeText(text) } catch {
+      const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select()
+      try { document.execCommand('copy') } catch { /* ignore */ }
+      t.remove()
+    }
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
+
+  const submitRequest = async () => {
+    if (!canSend) { setTouched(true); return }
+    setSending(true); setSendError(false)
+    try {
+      const r = await fetch(ORDER_ENDPOINT, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name, phone, email, occasion: occasionLabel || '', date, time, fulfilment: fulfil, address, guests, notes,
+          items: cart.list.map(l => ({ name: l.name, qty: l.qty, price: l.price, total: l.qty * l.price })),
+          total: cart.total, message: text, source: 'website',
+        }),
+      })
+      if (!r.ok) throw new Error('bad status')
+      setDoneKind('form'); setDone(true)
+    } catch { setSendError(true) } finally { setSending(false) }
+  }
   const goNext = () => setStep(s => Math.min(4, s + 1))
   const goBack = () => setStep(s => Math.max(1, s - 1))
 
@@ -124,12 +177,25 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
               {done ? (
                 <div className="ow-done">
                   <span className="ow-done-ico"><Icon name="check" size={34} stroke={2.4} /></span>
-                  <h2 className="ow-title">Almost there{name ? `, ${name.split(' ')[0]}` : ''}!</h2>
-                  <p className="ow-sub">Your order is ready in WhatsApp or your email app. Press <b>Send</b> there and we will reply within 24 hours to confirm.</p>
-                  <div className="ow-done-actions">
-                    <button type="button" className="ow-next" onClick={() => { resetAll(); onClose() }}>Done</button>
-                    <button type="button" className="ow-back" onClick={() => setDone(false)}>Back to my order</button>
-                  </div>
+                  {doneKind === 'form' ? (
+                    <>
+                      <h2 className="ow-title">Order request sent{name ? `, ${name.split(' ')[0]}` : ''}!</h2>
+                      <p className="ow-sub">We have your order. We will reply within 24 hours to confirm pricing, delivery and payment.</p>
+                      <div className="ow-done-actions">
+                        <button type="button" className="ow-next" onClick={() => { resetAll(); onClose() }}>Done</button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="ow-title">Did your order send{name ? `, ${name.split(' ')[0]}` : ''}?</h2>
+                      <p className="ow-sub">Your order is open in WhatsApp or your email app, and it only reaches us once you press <b>Send</b> there. Once it has, we will reply within 24 hours to confirm.</p>
+                      <div className="ow-done-actions">
+                        <button type="button" className="ow-next" onClick={() => { resetAll(); onClose() }}>Yes, it sent</button>
+                        <button type="button" className="ow-back" onClick={() => setDone(false)}>Not yet, take me back</button>
+                        <button type="button" className="ow-back" onClick={copyOrder}>{copied ? 'Copied!' : 'Copy my order'}</button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (<>
               <p className="ow-kicker">Step {step} of 4</p>
@@ -231,6 +297,11 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
                         {touched && !canSend && <p className="form-error">Please add your name and a phone number or email.</p>}
 
                         <div className="send-row">
+                          {ORDER_ENDPOINT && (
+                            <button type="button" className="send req" onClick={submitRequest} disabled={sending}>
+                              <Icon name="send" size={20} /> {sending ? 'Sending...' : 'Send order request'}
+                            </button>
+                          )}
                           <a className="send wa" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`} target="_blank" rel="noreferrer" onClick={guard}>
                             <Icon name="whatsapp" size={20} /> Send on WhatsApp
                           </a>
@@ -238,6 +309,8 @@ export default function OrderModal({ open, onClose, cart, startStep = 1 }) {
                             <Icon name="mail" size={20} /> Send by Email
                           </a>
                         </div>
+                        {sendError && <p className="form-error">That did not go through. Please send it by WhatsApp or email instead.</p>}
+                        <button type="button" className="copy-order" onClick={copyOrder}>{copied ? 'Copied!' : 'Copy order text'}</button>
                       </div>
                     </div>
                   )}

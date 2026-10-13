@@ -85,3 +85,13 @@ To collect sign-ups automatically:
 2. Create a `.env` file in the project root with: `VITE_NEWSLETTER_ENDPOINT=https://formspree.io/f/yourFormId`
 3. Rebuild. Each sign-up now arrives in your inbox / Formspree dashboard.
 For real campaigns and automatic welcome emails, use Mailchimp, MailerLite or Brevo and point the form at their hosted form URL.
+
+## Before you go live
+
+Copy `.env.example` to `.env.production` (or set the same names in your host's environment settings):
+
+- `VITE_SITE_URL` – your live address. Needed so WhatsApp / Instagram link previews show the share image (`public/og-image.jpg`).
+- `VITE_ORDER_ENDPOINT` – optional Formspree form URL. Adds a "Send order request" button at checkout so orders reach you even if the customer never presses Send in WhatsApp or email.
+
+The cart and the checkout details are saved in the visitor's browser for 7 days, so a refresh or an accidental tab close doesn't lose an order.
+To mark something sold out, add `soldOut: true` to the item in `src/data/menu.js`, or put a chin-chin flavour name in `SOLD_OUT_FLAVOURS`.

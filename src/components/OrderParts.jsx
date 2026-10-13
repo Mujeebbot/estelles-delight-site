@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import Icon from './Icon.jsx'
-import { CATALOGUE, CHINCHIN_SIZES, CHINCHIN_CATEGORIES, money } from '../data/menu.js'
+import { CATALOGUE, CHINCHIN_SIZES, CHINCHIN_CATEGORIES, SOLD_OUT_FLAVOURS, money } from '../data/menu.js'
 
 /** Open/close section with a chevron. Shows a small count when something inside is in the cart. */
 export function Accordion({ title, meta, count = 0, defaultOpen = true, level = 'h4', className = '', children }) {
@@ -42,13 +42,15 @@ export function ItemRows({ group, catTitle, cart }) {
       {group.items.map(it => {
         const line = cart.lines[it.id]
         return (
-          <li key={it.id} className={line ? 'sel' : ''}>
+          <li key={it.id} className={line ? 'sel' : it.soldOut ? 'out' : ''}>
             <div className="row-text">
               <strong>{it.name}</strong>
               <small>{money(it.price)} each{it.min > 1 ? `, minimum ${it.min}` : ''}</small>
             </div>
             {line ? (
               <Stepper qty={line.qty} label={it.name} onDec={() => cart.dec(it.id)} onInc={() => cart.add(it, catTitle)} />
+            ) : it.soldOut ? (
+              <span className="row-out">Sold out</span>
             ) : (
               <button type="button" className="row-add" onClick={() => cart.add(it, catTitle)}>
                 <Icon name="plus" size={14} stroke={2.6} /> Add {it.min > 1 ? it.min : ''}
@@ -113,7 +115,7 @@ export function ChinChinPanel({ cart, photos }) {
                 const l = line(f)
                 return (
                   <div key={f} className={`chip${l ? ' sel' : ''}`}>
-                    <button type="button" onClick={() => !l && add(f)} aria-pressed={!!l}>
+                    <button type="button" disabled={SOLD_OUT_FLAVOURS.includes(f) && !l} onClick={() => !l && add(f)} aria-pressed={!!l}>
                       {l && <Icon name="check" size={14} stroke={2.6} />}{f}
                     </button>
                     {l && (

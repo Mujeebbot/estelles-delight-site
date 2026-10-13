@@ -1324,3 +1324,14 @@ body.order-open .shop-bar { display: none; }
 .shop-card-body .acc-inner .rows { padding-bottom: 2px; }
 @media (prefers-reduced-motion: reduce) { .acc-body, .acc-chev { transition: none; } }
 
+
+/* ═════════ ROUND 9: order safety, availability ═════════ */
+.send.req { background: var(--brand-red); border: 0; cursor: pointer; }
+.send.req[disabled] { opacity: .7; cursor: progress; }
+.copy-order { justify-self: center; margin-top: 10px; background: none; border: 0; padding: 8px 12px; cursor: pointer; color: var(--p-mute, rgba(59,26,8,.65)); font: 600 13.5px 'Fredoka', sans-serif; text-decoration: underline; text-underline-offset: 3px; }
+.copy-order:hover { color: var(--brand-red); }
+.rows li.out { opacity: .6; }
+.row-out { font: 600 12.5px 'Fredoka', sans-serif; padding: 6px 14px; border-radius: 99px; background: rgba(59,26,8,.08); color: rgba(59,26,8,.6); white-space: nowrap; }
+.chip > button[disabled] { opacity: .45; cursor: not-allowed; text-decoration: line-through; }
+.ow-done-actions { flex-wrap: wrap; justify-content: center; }
+
