@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Blinker:wght@400;600;700;800;900&family=Fredoka:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&family=Kaushan+Script&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Blinker:wght@400;600;700;800;900&family=Fredoka:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&family=Kaushan+Script&display=swap');
 
 :root {
   --brand-red:       #E63229;
@@ -1343,4 +1343,3 @@ body.order-open .shop-bar { display: none; }
 .flavour-block .acc-head .acc-chev { font: inherit; }
 .flavour-block .acc-head .acc-count { font: 600 11.5px 'Fredoka', sans-serif; color: #fff; }
 .shop-card-body .acc-title { display: block; margin: 0; }
-

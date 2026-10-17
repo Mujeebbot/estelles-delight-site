@@ -9,8 +9,9 @@ export default function CartDrawer({ open, onClose, cart, onCheckout, onBrowse, 
     if (!open) return
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     document.addEventListener('keydown', onKey)
+    document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
+    return () => { document.removeEventListener('keydown', onKey); document.documentElement.style.overflow = ''; document.body.style.overflow = '' }
   }, [open, onClose])
 
   return (

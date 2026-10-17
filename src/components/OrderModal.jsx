@@ -75,10 +75,12 @@ export default function OrderModal({ open, onClose, cart, step = 1, onStep }) {
     if (!open) return
     const onKey = (e) => { if (e.key === 'Escape') closeRef.current() }
     document.addEventListener('keydown', onKey)
+    document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
     document.body.classList.add('order-open')
     return () => {
       document.removeEventListener('keydown', onKey)
+      document.documentElement.style.overflow = ''
       document.body.style.overflow = ''
       document.body.classList.remove('order-open')
     }
